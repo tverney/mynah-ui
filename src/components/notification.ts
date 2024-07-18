@@ -12,6 +12,8 @@ import '../styles/components/_notification.scss';
 
 type NotificationContentType = string | ExtendedHTMLElement | HTMLElement | DomBuilderObject;
 
+const DEFAULT_TIMEOUT = 5000;
+
 export interface NotificationProps {
   duration?: number;
   type?: NotificationType;
@@ -28,7 +30,7 @@ export class Notification {
   private readonly props;
 
   constructor (props: NotificationProps) {
-    this.duration = props.duration !== undefined ? props.duration : 5000;
+    this.duration = props.duration !== undefined ? props.duration : DEFAULT_TIMEOUT;
     this.type = props.type ?? NotificationType.INFO;
     this.props = props;
   }
@@ -82,11 +84,14 @@ export class Notification {
         },
       ],
     });
-
-    if (this.duration !== -1) {
+    if (this.duration !== undefined && this.duration !== -1) {
       setTimeout(() => {
         this.notificationOverlay?.close();
       }, this.duration);
+    } else if (this.duration === undefined) {
+      setTimeout(() => {
+        this.notificationOverlay?.close();
+      }, DEFAULT_TIMEOUT);
     }
   }
 
